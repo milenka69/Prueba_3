@@ -7,9 +7,9 @@ class LineaAdmin(admin.ModelAdmin):
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
-    list_display = ("Linea", "nombre", "descripcion", "imagen", "porciones", "aptocelíacos", "stock", "precio", "disponibleparaventa")
-    list_filter = ("Linea", "aptocelíacos")
+    list_display = ("Linea", "nombre", "descripcion", "imagen", "porciones", "aptoceliacos", "stock", "precio_form", "disponibleparaventa")
+    list_filter = ("Linea", "aptoceliacos")
     search_fields = ("nombre",)
 
     def precio_form(self, obj):
-        pass
+        return f"${obj.precio: ,}".replace("," , ".")

@@ -3,6 +3,9 @@ from django.db import models
 class Linea(models.Model):
     nombre = models.CharField(max_length=30)
 
+    def __str__(self):
+        return self.nombre
+
 class Producto(models.Model):
     Linea = models.ForeignKey(
         Linea,
@@ -12,7 +15,10 @@ class Producto(models.Model):
     descripcion = models.TextField()
     imagen = models.ImageField(null=True)
     porciones = models.SmallIntegerField()
-    aptocelíacos = models.BooleanField(default=False)
+    aptoceliacos = models.BooleanField(default=False)
     stock = models.SmallIntegerField()
     precio = models.IntegerField()
     disponibleparaventa = models.BooleanField()
+
+    def __str__(self):
+        return self.nombre
