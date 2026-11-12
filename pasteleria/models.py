@@ -13,7 +13,7 @@ class Producto(models.Model):
     )
     nombre = models.CharField(max_length=30)
     descripcion = models.TextField()
-    imagen = models.ImageField(null=True)
+    imagen = models.ImageField(upload_to='productos/', null=True, blank=True)
     porciones = models.SmallIntegerField()
     aptoceliacos = models.BooleanField(default=False)
     stock = models.SmallIntegerField()
