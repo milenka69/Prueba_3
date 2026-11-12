@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Linea, Producto
+from .models import Linea, Producto, Encargos
 
 @admin.register(Linea)
 class LineaAdmin(admin.ModelAdmin):
@@ -13,3 +13,5 @@ class ProductoAdmin(admin.ModelAdmin):
 
     def precio_form(self, obj):
         return f"${obj.precio: ,}".replace("," , ".")
+
+admin.site.register(Encargos)

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Catálogo | Pastelería{% endblock %}</title>
+    <style>
+        :root {
+            --ink: #32251f;
+            --muted: #76665d;
+            --accent: #9c4f35;
+            --paper: #fffaf5;
+            --line: #eadfd6;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background: var(--paper);
+            color: var(--ink);
+            font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+        }
+        a { color: inherit; }
+        .site-header { border-bottom: 1px solid var(--line); background: #fff; }
+        .header-inner, main, .site-footer {
+            width: min(1120px, calc(100% - 40px));
+            margin: 0 auto;
+        }
+        .header-inner {
+            min-height: 76px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .brand {
+            color: var(--accent);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            text-decoration: none;
+        }
+        .main-nav a {
+            color: var(--muted);
+            font-size: .95rem;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        main { min-height: calc(100vh - 140px); padding: 48px 0 64px; }
+        .site-footer {
+            padding: 22px 0;
+            border-top: 1px solid var(--line);
+            color: var(--muted);
+            font-size: .85rem;
+        }
+        @media (max-width: 560px) {
+            .header-inner, main, .site-footer { width: min(100% - 28px, 1120px); }
+            main { padding-top: 32px; }
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-inner">
+            <a class="brand" href="{% url 'catalogo' %}">Pastelería</a>
+            <nav class="main-nav" aria-label="Menú principal">
+                <a href="{% url 'catalogo' %}">Catálogo</a>
+            </nav>
+        </div>
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+        <div>Pastelería · Catálogo de productos</div>
+    </footer>
+</body>
+</html>
