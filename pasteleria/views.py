@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 from .models import Linea, Producto
 
@@ -27,3 +27,12 @@ def catalogo(request):
         'linea_seleccionada': linea_id,
         'filtros_aplicados': bool(nombre or linea_id),
     })
+
+def detalle(request, producto_id):
+    producto = get_object_or_404(
+        Producto,
+        id=producto_id,
+        disponibleparaventa=True
+    )
+
+    return render(request, 'detalle.html', {'producto': producto,})

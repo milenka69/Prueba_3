@@ -93,6 +93,18 @@
     }
     .product-name { margin: 0; font-size: 1.1rem; }
     .product-price { margin: 12px 0 0; font-size: 1.1rem; font-weight: 750; }
+    .product-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 14px;
+        color: var(--muted);
+        font-size: .92rem;
+        font-weight: 600;
+        text-decoration: none;
+        transition: color .2s ease;
+    }
+    .product-link:hover, .product-link:focus-visible { color: var(--accent); }
     .empty-state {
         padding: 42px 20px;
         border: 1px dashed var(--line);
@@ -148,6 +160,7 @@
                     <p class="product-line">{{ producto.Linea.nombre }}</p>
                     <h2 class="product-name">{{ producto.nombre }}</h2>
                     <p class="product-price">{{ producto.precio|pesos_chilenos }}</p>
+                    <a class="product-link" href="{% url 'detalle' producto.pk %}">Ver detalles <span aria-hidden="true">→</span></a>
                 </div>
             </article>
         {% endfor %}

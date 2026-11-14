@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% load catalogo %}
+
+{% block title %}{{ producto.nombre }} | Pastelería{% endblock %}
+
+{% block extra_head %}
+<style>
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 24px;
+        color: var(--muted);
+        font-size: .92rem;
+        font-weight: 600;
+        text-decoration: none;
+    }
+    .back-link:hover { color: var(--accent); }
+    .product-detail {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(300px, .9fr);
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: #fff;
+        box-shadow: 0 16px 40px rgb(50 37 31 / 7%);
+    }
+    .detail-visual {
+        display: grid;
+        min-height: 440px;
+        place-items: center;
+        background: #f3e9df;
+        color: #80685a;
+    }
+    .detail-image { width: 100%; height: 100%; min-height: 440px; object-fit: cover; }
+    .image-placeholder { padding: 24px; text-align: center; }
+    .detail-content { align-self: center; padding: clamp(26px, 5vw, 52px); }
+    .eyebrow {
+        margin: 0 0 10px;
+        color: var(--accent);
+        font-size: .78rem;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+    }
+    .detail-content h1 {
+        margin: 0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(2rem, 4vw, 3rem);
+        font-weight: 500;
+        line-height: 1.1;
+    }
+    .description { margin: 18px 0 0; color: var(--muted); line-height: 1.7; }
+    .price {
+        margin: 24px 0;
+        color: var(--accent);
+        font-size: 1.65rem;
+        font-weight: 750;
+    }
+    .details-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+        margin: 0;
+        padding: 20px 0 0;
+        border-top: 1px solid var(--line);
+    }
+    .details-list div { min-width: 0; }
+    .details-list dt { margin-bottom: 5px; color: var(--muted); font-size: .82rem; }
+    .details-list dd { margin: 0; font-weight: 650; }
+    .availability { color: #47704c; }
+    @media (max-width: 720px) {
+        .product-detail { grid-template-columns: 1fr; }
+        .detail-visual, .detail-image { min-height: 280px; max-height: 420px; }
+    }
+    @media (max-width: 420px) {
+        .details-list { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<a class="back-link" href="{% url 'catalogo' %}"><span aria-hidden="true">←</span> Volver al catálogo</a>
+
+<article class="product-detail">
+    <div class="detail-visual">
+        {% if producto.imagen %}
+            <img class="detail-image" src="{{ producto.imagen.url }}" alt="{{ producto.nombre }}">
+        {% else %}
+            <div class="image-placeholder" role="img" aria-label="Imagen no disponible para {{ producto.nombre }}">Imagen próximamente</div>
+        {% endif %}
+    </div>
+
+    <div class="detail-content">
+        <p class="eyebrow">{{ producto.Linea.nombre }}</p>
+        <h1>{{ producto.nombre }}</h1>
+        <p class="description">{{ producto.descripcion }}</p>
+        <p class="price">{{ producto.precio|pesos_chilenos }}</p>
+
+        <dl class="details-list">
+            <div>
+                <dt>Porciones</dt>
+                <dd>{{ producto.porciones }}</dd>
+            </div>
+            <div>
+                <dt>Apto para celíacos</dt>
+                <dd>{% if producto.aptoceliacos %}Sí{% else %}No{% endif %}</dd>
+            </div>
+            <div>
+                <dt>Disponibilidad</dt>
+                <dd class="availability">{% if producto.stock > 0 %}{{ producto.stock }} disponible{{ producto.stock|pluralize:"s" }}{% else %}Agotado{% endif %}</dd>
+            </div>
+        </dl>
+    </div>
+</article>
+{% endblock %}
