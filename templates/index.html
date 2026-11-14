@@ -21,6 +21,45 @@
         font-weight: 500;
     }
     .intro-copy { margin: 12px 0 0; color: var(--muted); }
+
+    .catalog-filters {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+        gap: 12px;
+        margin: 24px 0;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: #fff;
+    }
+    .filter-field { display: grid; flex: 1 1 220px; gap: 6px; }
+    .filter-field label { font-size: .88rem; font-weight: 650; }
+    .filter-field input, .filter-field select {
+        width: 100%;
+        min-height: 42px;
+        padding: 9px 11px;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: #fff;
+        color: var(--ink);
+        font: inherit;
+    }
+    .filter-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .filter-button {
+        min-height: 42px;
+        padding: 9px 16px;
+        border: 1px solid var(--accent);
+        border-radius: 8px;
+        background: var(--accent);
+        color: #fff;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 650;
+        text-decoration: none;
+    }
+    .filter-reset { color: var(--muted); font-size: .9rem; }
+    
     .results-count { margin: 0 0 14px; color: var(--muted); font-size: .9rem; }
     .product-grid {
         display: grid;
@@ -72,6 +111,28 @@
     <p class="intro-copy">Encuentra algo rico para compartir.</p>
 </section>
 
+<form class="catalog-filters" method="get" action="{% url 'catalogo' %}">
+    <div class="filter-field">
+        <label for="nombre">Buscar por nombre</label>
+        <input id="nombre" name="nombre" type="search" value="{{ nombre_buscado }}" placeholder="Ej. torta de chocolate">
+    </div>
+    <div class="filter-field">
+        <label for="linea">Filtrar por línea</label>
+        <select id="linea" name="linea">
+            <option value="">Todas las líneas</option>
+            {% for linea in lineas %}
+                <option value="{{ linea.pk }}" {% if linea_seleccionada == linea.pk|stringformat:"s" %}selected{% endif %}>{{ linea.nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="filter-actions">
+        <button class="filter-button" type="submit">Aplicar filtros</button>
+        {% if filtros_aplicados %}
+            <a class="filter-reset" href="{% url 'catalogo' %}">Limpiar</a>
+        {% endif %}
+    </div>
+</form>
+
 {% if productos %}
     <p class="results-count">{{ productos|length }} producto{{ productos|length|pluralize:"s" }} disponible{{ productos|length|pluralize:"s" }}</p>
     <section class="product-grid" aria-label="Productos disponibles">
@@ -93,8 +154,13 @@
     </section>
 {% else %}
     <section class="empty-state" aria-live="polite">
-        <h2>Pronto tendremos productos</h2>
-        <p>En este momento no hay productos disponibles para mostrar.</p>
+        {% if filtros_aplicados %}
+            <h2>No encontramos productos</h2>
+            <p>Prueba con otro nombre o selecciona una línea diferente.</p>
+        {% else %}
+            <h2>Pronto tendremos productos</h2>
+            <p>En este momento no hay productos disponibles para mostrar.</p>
+        {% endif %}
     </section>
 {% endif %}
 {% endblock %}
