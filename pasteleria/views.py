@@ -48,7 +48,7 @@ def encargar(request, producto_id):
     form = EncargoForm(request.POST if request.method == 'POST' else None)
 
     if request.method == 'POST' and form.is_valid():
-        cantidad = form.cleaned_data['UnidadesApedir']
+        cantidad = form.cleaned_data['unidadesApedir']
 
         with transaction.atomic():
             producto = get_object_or_404(
@@ -58,7 +58,7 @@ def encargar(request, producto_id):
                 )
 
             if cantidad > producto.stock:
-                form.add_error('UnidadesApedir', 'La cantidad solicitada excede el stock disponible.', 'solo queda {producto.stock} unidades en stock.')
+                form.add_error('unidadesApedir', 'La cantidad solicitada excede el stock disponible.', 'solo queda {producto.stock} unidades en stock.')
 
             else:
                 encargo = form.save(commit=False)
