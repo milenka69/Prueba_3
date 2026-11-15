@@ -116,11 +116,13 @@
             </div>
             <div>
                 <dt>Disponibilidad</dt>
-                <dd class="availability">{% if producto.stock > 0 %}{{ producto.stock }} disponible{{ producto.stock|pluralize:"s" }}{% else %}Agotado{% endif %}</dd>
+                <dd class="availability">{% if producto.stock > 0 %}{{ producto.stock }} disponible{{ producto.stock|pluralize:"s" }}{% else %}<span style="color: red; font-weight: bold;">Agotado</span>{% endif %}</dd>
             </div>
         </dl>
         <div class="detail-actions">
-            <a class="order-button" href="{% url 'encargar' producto.id %}">Encargar</a>
+            {% if producto.stock > 0 %}
+                <a class="order-button" href="{% url 'encargar' producto.id %}">Encargar</a>
+            {% endif %}
         </div>
     </div>
 </article>

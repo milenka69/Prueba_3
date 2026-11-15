@@ -160,6 +160,9 @@
                     <p class="product-line">{{ producto.Linea.nombre }}</p>
                     <h2 class="product-name">{{ producto.nombre }}</h2>
                     <p class="product-price">{{ producto.precio|pesos_chilenos }}</p>
+                    {% if producto.stock == 0 %}
+                        <p><span style="color: red; font-weight: bold;">Agotado</span></p>
+                    {% endif %}
                     <a class="product-link" href="{% url 'detalle' producto.pk %}">Ver detalles <span aria-hidden="true">→</span></a>
                 </div>
             </article>
