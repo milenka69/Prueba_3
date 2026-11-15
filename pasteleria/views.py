@@ -1,5 +1,8 @@
-from django.shortcuts import render, get_object_or_404
+from django.contrib import messages
+from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
 
+from .forms import EncargoForm
 from .models import Linea, Producto
 
 
@@ -30,9 +33,25 @@ def catalogo(request):
 
 def detalle(request, producto_id):
     producto = get_object_or_404(
+        Producto, id=producto_id, disponibleparaventa=True
+    )
+    return render(request, 'detalle.html', {'producto': producto})
+
+
+def encargar(request, producto_id):
+    producto = get_object_or_404(
         Producto,
         id=producto_id,
         disponibleparaventa=True
     )
 
-    return render(request, 'detalle.html', {'producto': producto,})
+    form = EncargoForm(request.POST if request.method == 'POST' else None)
+    if request.method == 'POST' and form.is_valid():
+        encargo = form.save(commit=False)
+        encargo.producto = producto
+        encargo.fechapedido = timezone.localdate()
+        encargo.save()
+        messages.success(request, 'Tu encargo fue registrado correctamente.')
+        return redirect('detalle', producto_id=producto.id)
+
+    return render(request, 'encargo.html', {'producto': producto, 'form': form})

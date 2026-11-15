@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load catalogo %}
+
+{% block title %}Encargar {{ producto.nombre }} | Pastelería{% endblock %}
+
+{% block extra_head %}
+<style>
+    .back-link { display: inline-block; margin-bottom: 24px; color: var(--muted); text-decoration: none; }
+    .back-link:hover { color: var(--accent); }
+    .order-form { max-width: 620px; margin: 0 auto; padding: clamp(20px, 5vw, 36px); background: #fff; border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 16px 40px rgb(50 37 31 / 7%); }
+    .order-form h1 { margin-top: 0; font-family: Georgia, serif; font-weight: 500; }
+    .order-product { color: var(--accent); font-weight: 600; }
+    .form-field { display: grid; gap: 8px; margin-bottom: 20px; }
+    .order-form label { font-weight: 600; }
+    .order-form input { width: 100%; padding: 12px; border: 1px solid var(--line); border-radius: 8px; font: inherit; }
+    .order-form input:focus { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .order-form .helptext { color: var(--muted); font-size: .9rem; }
+    .order-form button { padding: 12px 20px; background: var(--accent); color: #fff; border: 0; border-radius: 8px; font: inherit; cursor: pointer; }
+    .errorlist { margin: 0; padding: 0; list-style: none; color: #a12121; font-size: .9rem; }
+    .order-form input[aria-invalid="true"] { border-color: #a12121; }
+    .date-control { position: relative; }
+    .date-control > input { padding-right: 56px; }
+    .date-calendar { position: absolute; top: 0; right: 0; bottom: 0; width: 48px; display: grid; place-items: center; color: var(--accent); border-left: 1px solid var(--line); border-radius: 0 8px 8px 0; }
+    .date-calendar:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .date-calendar svg { width: 22px; height: 22px; pointer-events: none; }
+    .order-form .date-calendar input { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; opacity: 0; cursor: pointer; }
+    .date-calendar input::-webkit-calendar-picker-indicator { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; padding: 0; cursor: pointer; }
+</style>
+{% endblock %}
+
+{% block content %}
+<a class="back-link" href="{% url 'detalle' producto.id %}">← Volver al detalle del producto</a>
+<section class="order-form" aria-labelledby="encargo-title">
+    <h1 id="encargo-title">Encargar producto</h1>
+    <p class="order-product">{{ producto.nombre }} · {{ producto.precio|pesos_chilenos }} por unidad</p>
+    <p>Ingrese sus datos para encargar, solo puede encargar un maximo de 3 unidades </p>
+    <form method="post" action="{% url 'encargar' producto.id %}" novalidate>
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            <div class="form-field">
+                {{ field.label_tag }}
+                {% if field.name == 'fecharetiro' %}
+                    <div class="date-control">
+                        {{ field }}
+                        <span class="date-calendar">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                <rect x="3" y="5" width="18" height="16" rx="2" />
+                                <path d="M7 3v4M17 3v4M3 11h18M7 15h3M14 15h3" />
+                            </svg>
+                            <input type="date" id="retiro-calendario" min="{% now 'Y-m-d' %}" aria-label="Seleccionar fecha de retiro en el calendario">
+                        </span>
+                    </div>
+                {% else %}
+                    {{ field }}
+                {% endif %}
+                {% if field.errors %}
+                    <ul class="errorlist" id="{{ field.auto_id }}_error" role="alert">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                {% if field.help_text %}
+                    <span class="helptext" id="{{ field.auto_id }}_helptext">{{ field.help_text }}</span>
+                {% endif %}
+            </div>
+        {% endfor %}
+        <button type="submit">Confirmar encargo</button>
+    </form>
+</section>
+<script>
+(() => {
+    const fecha = document.getElementById('id_fecharetiro');
+    const calendario = document.getElementById('retiro-calendario');
+
+    function sincronizarCalendario() {
+        const partes = fecha.value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        calendario.value = partes ? `${partes[3]}-${partes[2]}-${partes[1]}` : '';
+    }
+
+    fecha.addEventListener('input', () => {
+        const posicion = fecha.selectionStart;
+        const digitosAntes = fecha.value.slice(0, posicion).replace(/\D/g, '').length;
+        const digitos = fecha.value.replace(/\D/g, '').slice(0, 8);
+        fecha.value = [digitos.slice(0, 2), digitos.slice(2, 4), digitos.slice(4, 8)]
+            .filter(Boolean).join('/');
+        let cursor = digitosAntes;
+        if (digitosAntes > 2) cursor++;
+        if (digitosAntes > 4) cursor++;
+        fecha.setSelectionRange(cursor, cursor);
+        sincronizarCalendario();
+    });
+
+    calendario.addEventListener('click', () => {
+        if (typeof calendario.showPicker === 'function') calendario.showPicker();
+    });
+    calendario.addEventListener('change', () => {
+        if (!calendario.value) return;
+        const [anio, mes, dia] = calendario.value.split('-');
+        fecha.value = `${dia}/${mes}/${anio}`;
+        fecha.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+    sincronizarCalendario();
+})();
+</script>
+{% endblock %}

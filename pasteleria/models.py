@@ -25,10 +25,10 @@ class Producto(models.Model):
 
 class Encargos(models.Model):
     nombre = models.CharField(max_length=50)
-    telefono = models.CharField(max_length=15)
+    telefono = models.CharField(max_length=15, blank=True)
     correo = models.EmailField()
     fechapedido = models.DateField()
-    fecharetiro = models.TimeField()
+    fecharetiro = models.DateField()
     unidadesApedir = models.SmallIntegerField()
     producto = models.ForeignKey(
         Producto,

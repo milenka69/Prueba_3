@@ -70,6 +70,10 @@
     .details-list dt { margin-bottom: 5px; color: var(--muted); font-size: .82rem; }
     .details-list dd { margin: 0; font-weight: 650; }
     .availability { color: #47704c; }
+    .detail-actions { display: flex; justify-content: flex-end; margin-top: 28px; }
+    .order-button { display: inline-block; padding: 12px 24px; background: var(--accent); color: #fff; border-radius: 8px; font-weight: 600; text-decoration: none; }
+    .order-button:hover { background: #7d3e29; }
+    .order-success { padding: 16px; background: #edf6ee; color: #28582e; border-radius: 8px; }
     @media (max-width: 720px) {
         .product-detail { grid-template-columns: 1fr; }
         .detail-visual, .detail-image { min-height: 280px; max-height: 420px; }
@@ -82,6 +86,9 @@
 
 {% block content %}
 <a class="back-link" href="{% url 'catalogo' %}"><span aria-hidden="true">←</span> Volver al catálogo</a>
+{% for message in messages %}
+    <p class="order-success" role="status">{{ message }}</p>
+{% endfor %}
 
 <article class="product-detail">
     <div class="detail-visual">
@@ -112,6 +119,9 @@
                 <dd class="availability">{% if producto.stock > 0 %}{{ producto.stock }} disponible{{ producto.stock|pluralize:"s" }}{% else %}Agotado{% endif %}</dd>
             </div>
         </dl>
+        <div class="detail-actions">
+            <a class="order-button" href="{% url 'encargar' producto.id %}">Encargar</a>
+        </div>
     </div>
 </article>
 {% endblock %}
