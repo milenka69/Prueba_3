@@ -25,6 +25,7 @@ urlpatterns = [
     path('', views.catalogo, name='catalogo'),
     path('producto/<int:producto_id>/', views.detalle, name='detalle'),
     path('producto/<int:producto_id>/encargar/', views.encargar, name='encargar'),
+    path('encargo/<int:encargo_id>/comprobante/', views.comprobante, name='comprobante'),
 ]
 
 if settings.DEBUG:

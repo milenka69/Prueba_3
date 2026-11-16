@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 class Linea(models.Model):
     nombre = models.CharField(max_length=30)
@@ -28,6 +29,8 @@ class Encargos(models.Model):
     telefono = models.CharField(max_length=15, blank=True)
     correo = models.EmailField()
     fechapedido = models.DateField()
+    fecha_hora = models.DateTimeField(default=timezone.now, null=True, editable=False)
+    total = models.IntegerField(null=True, editable=False)
     fecharetiro = models.DateField()
     unidadesApedir = models.SmallIntegerField()
     producto = models.ForeignKey(

@@ -42,7 +42,7 @@ class EncargoTests(TestCase):
                 datos = dict(self.datos, unidadesApedir=unidades,
                              fecharetiro=(timezone.localdate() + timedelta(days=dias)).strftime('%d/%m/%Y'))
                 response = self.client.post(self.url, datos, follow=True)
-                self.assertRedirects(response, self.detalle_url)
+                self.assertRedirects(response, reverse('comprobante', args=[Encargos.objects.latest('pk').pk]))
                 self.assertContains(response, 'Tu encargo fue registrado correctamente.')
                 encargo = Encargos.objects.latest('pk')
                 self.assertEqual(encargo.producto, self.producto)
@@ -86,6 +86,29 @@ class EncargoTests(TestCase):
         self.assertContains(response, 'value="05/06/2030"')
         self.assertEqual(response.context['form'].cleaned_data['fecharetiro'].day, 5)
         self.assertEqual(response.context['form'].cleaned_data['fecharetiro'].month, 6)
+        self.assertEqual(Encargos.objects.count(), 0)
+
+    def test_comprobante_conserva_total_y_recarga_no_modifica_encargo_ni_stock(self):
+        response = self.client.post(self.url, dict(self.datos, unidadesApedir=2))
+        encargo = Encargos.objects.get()
+        self.assertRedirects(response, reverse('comprobante', args=[encargo.pk]))
+        self.assertEqual(encargo.total, 30000)
+        self.assertIsNotNone(encargo.fecha_hora)
+        Producto.objects.filter(pk=self.producto.pk).update(precio=20000)
+        for _ in range(2):
+            comprobante = self.client.get(response.url)
+            self.assertContains(comprobante, '$30.000 CLP')
+            self.assertContains(comprobante, self.datos['nombre'])
+            self.assertContains(comprobante, 'Torta')
+            self.assertEqual(comprobante.context['encargo'].pk, encargo.pk)
+        self.producto.refresh_from_db()
+        self.assertEqual(self.producto.stock, 8)
+        self.assertEqual(Encargos.objects.count(), 1)
+
+    def test_stock_insuficiente_muestra_error_sin_guardar(self):
+        Producto.objects.filter(pk=self.producto.pk).update(stock=1)
+        response = self.client.post(self.url, dict(self.datos, unidadesApedir=2))
+        self.assertContains(response, 'Quedan 1 unidades en stock.')
         self.assertEqual(Encargos.objects.count(), 0)
 
     def test_producto_no_disponible_no_admite_encargos(self):

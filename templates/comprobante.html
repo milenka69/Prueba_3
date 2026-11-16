@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% load catalogo %}
+
+{% block title %}Comprobante {{ encargo.pk }} | Pastelería{% endblock %}
+
+{% block extra_head %}
+<style>
+    .receipt { max-width: 620px; margin: 0 auto; padding: clamp(20px, 5vw, 36px); background: #fff; border: 1px solid var(--line); border-radius: 20px; }
+    .receipt h1 { margin-top: 0; font-family: Georgia, serif; font-weight: 500; }
+    .receipt dl { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .receipt dt { font-weight: 600; }
+    .receipt dd { margin: 0; overflow-wrap: anywhere; }
+    .receipt a { color: var(--accent); }
+    @media (max-width: 480px) {
+        .receipt dl { grid-template-columns: 1fr; gap: 8px; }
+        .receipt dd { margin-bottom: 12px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="receipt" aria-labelledby="comprobante-title">
+    <h1 id="comprobante-title">Comprobante de encargo</h1>
+    {% for message in messages %}
+        <p role="status">{{ message }}</p>
+    {% endfor %}
+    <dl>
+        <dt>Código del encargo</dt><dd>{{ encargo.pk }}</dd>
+        <dt>Producto</dt><dd>{{ encargo.producto.nombre }}</dd>
+        <dt>Nombre de quien encarga</dt><dd>{{ encargo.nombre }}</dd>
+        <dt>Cantidad</dt><dd>{{ encargo.unidadesApedir }}</dd>
+        <dt>Fecha de retiro</dt><dd>{{ encargo.fecharetiro|date:"d/m/Y" }}</dd>
+        <dt>Total en pesos chilenos</dt><dd>{{ total|pesos_chilenos }} CLP</dd>
+        <dt>Fecha y hora del encargo</dt>
+        <dd>{% if encargo.fecha_hora %}{{ encargo.fecha_hora|date:"d/m/Y H:i:s" }}{% else %}{{ encargo.fechapedido|date:"d/m/Y" }} (hora sin registrar){% endif %}</dd>
+    </dl>
+    <a href="{% url 'catalogo' %}">Volver al catálogo</a>
+</section>
+{% endblock %}
