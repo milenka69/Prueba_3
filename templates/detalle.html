@@ -116,7 +116,7 @@
             </div>
             <div>
                 <dt>Disponibilidad</dt>
-                <dd class="availability">{% if producto.stock > 0 %}{{ producto.stock }} disponible{{ producto.stock|pluralize:"s" }}{% else %}<span style="color: red; font-weight: bold;">Agotado</span>{% endif %}</dd>
+                <dd class="availability">{% if producto.stock > 0 %}{{ producto.stock }} disponible{{ producto.stock|pluralize:"s" }}{% else %}<span style="color: red; font-weight: bold;">Agotado por hoy</span>{% endif %}</dd>
             </div>
         </dl>
         <div class="detail-actions">

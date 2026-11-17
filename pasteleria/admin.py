@@ -16,6 +16,13 @@ class ProductoAdmin(admin.ModelAdmin):
 
 @admin.register(Encargos)
 class EncargosAdmin(admin.ModelAdmin):
-    list_display = ("nombre", "fechapedido", "fecharetiro", "unidadesApedir")
+    list_display = ("codigo", "producto", "nombre", "unidadesApedir", "fecharetiro")
+    list_select_related = ("producto",)
     list_filter = ("producto__nombre", "fecharetiro")
     search_fields = ("nombre", "correo")
+
+    def codigo(self, obj):
+        return obj.producto_id
+
+    codigo.short_description = "Código de producto"
+    codigo.admin_order_field = "producto_id"
